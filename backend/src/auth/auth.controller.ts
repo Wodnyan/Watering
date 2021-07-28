@@ -1,7 +1,21 @@
-import { Body, Controller, Post, Res } from "@nestjs/common";
+import {
+    Body,
+    Controller,
+    Get,
+    MiddlewareConsumer,
+    NestModule,
+    Post,
+    Res,
+} from "@nestjs/common";
 import { Response } from "express";
 import { REFRESH_TOKEN_NAME } from "src/constants";
+import { AuthenticateMiddleware } from "src/middlewares/authenticate.middleware";
 import { AuthService } from "./auth.service";
+
+type LoginCredentials = {
+    email: string;
+    password: string;
+};
 
 type RegisterCredentials = {
     username: string;
@@ -12,6 +26,27 @@ type RegisterCredentials = {
 @Controller("api/v1/auth")
 export class AuthController {
     constructor(private authService: AuthService) {}
+
+    @Get("me")
+    async me() {
+        return "hello world";
+    }
+
+    @Post("login")
+    async login(
+        @Res() res: Response,
+        @Body() userCredentials: LoginCredentials,
+    ) {
+        const { accessToken, refreshToken, user } =
+            await this.authService.login(userCredentials);
+        res.cookie(REFRESH_TOKEN_NAME, refreshToken, {
+            httpOnly: true,
+        });
+        res.json({
+            accessToken,
+            user,
+        });
+    }
 
     @Post("register")
     async register(

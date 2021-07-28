@@ -40,6 +40,26 @@ export class AuthService {
             throw new Error("Incorrect Password");
         } else {
             // Create jwt
+            const accessToken = await this.jwtService.sign(
+                {
+                    id: user.id,
+                },
+                process.env.ACCESS_TOKEN_SECRET,
+            );
+            const refreshToken = await this.jwtService.sign(
+                {
+                    id: user.id,
+                },
+                process.env.REFRESH_TOKEN_SECRET,
+            );
+            return {
+                user: {
+                    ...user,
+                    password: undefined,
+                },
+                accessToken,
+                refreshToken,
+            };
         }
     }
 
