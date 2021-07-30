@@ -5,11 +5,13 @@ import {
     MiddlewareConsumer,
     NestModule,
     Post,
+    Req,
     Res,
 } from "@nestjs/common";
-import { Response } from "express";
+import { Request, Response } from "express";
 import { REFRESH_TOKEN_NAME } from "src/constants";
 import { AuthenticateMiddleware } from "src/middlewares/authenticate.middleware";
+import { UserService } from "src/user/user.service";
 import { AuthService } from "./auth.service";
 
 type LoginCredentials = {
@@ -25,11 +27,22 @@ type RegisterCredentials = {
 
 @Controller("api/v1/auth")
 export class AuthController {
-    constructor(private authService: AuthService) {}
+    constructor(
+        private authService: AuthService,
+        private userService: UserService,
+    ) {}
 
     @Get("me")
-    async me() {
-        return "hello world";
+    async me(@Req() req: Request) {
+        const { userId } = req;
+        const user = await this.userService.user({
+            id: userId,
+        });
+        delete user.password;
+
+        return {
+            user,
+        };
     }
 
     @Post("login")
