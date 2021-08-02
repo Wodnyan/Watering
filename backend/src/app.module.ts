@@ -41,5 +41,18 @@ export class AppModule implements NestModule {
             path: "api/v1/auth/me",
             method: RequestMethod.GET,
         });
+        consumer
+            .apply(AuthenticateMiddleware)
+            .exclude(
+                {
+                    method: RequestMethod.GET,
+                    path: "api/v1/plants",
+                },
+                {
+                    method: RequestMethod.GET,
+                    path: "api/v1/plants/:plantId",
+                },
+            )
+            .forRoutes(PlantController);
     }
 }

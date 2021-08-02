@@ -30,6 +30,7 @@ type UpdatePlantInfo = {
 export class PlantController {
     constructor(private plantService: PlantService) {}
 
+    // TODO: If no plant is found respond with 404
     @Get(":plantId")
     getOne(@Param("plantId") plantId: string) {
         return this.plantService.plant({

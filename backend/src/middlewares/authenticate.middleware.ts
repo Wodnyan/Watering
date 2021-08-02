@@ -1,7 +1,12 @@
-import { Injectable, NestMiddleware } from "@nestjs/common";
-import { Request, Response, NextFunction } from "express";
-import { JwtService } from "src/services/jwt.service";
+import {
+    HttpException,
+    HttpStatus,
+    Injectable,
+    NestMiddleware,
+} from "@nestjs/common";
 import * as dotenv from "dotenv";
+import { NextFunction, Request, Response } from "express";
+import { JwtService } from "src/services/jwt.service";
 
 dotenv.config();
 
@@ -11,7 +16,7 @@ export class AuthenticateMiddleware implements NestMiddleware {
 
     async use(req: Request, res: Response, next: NextFunction) {
         try {
-            const token = req.headers.authorization.split(" ")[1];
+            const token = req.headers.authorization?.split(" ")[1];
             const { id } = (await this.jwtService.verify(
                 token,
                 process.env.ACCESS_TOKEN_SECRET,
@@ -21,7 +26,7 @@ export class AuthenticateMiddleware implements NestMiddleware {
             req.userId = id;
             next();
         } catch (error) {
-            next(error);
+            next(new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED));
         }
     }
 }
