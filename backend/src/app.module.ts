@@ -9,6 +9,8 @@ import { AppService } from "./app.service";
 import { AuthController } from "./auth/auth.controller";
 import { AuthService } from "./auth/auth.service";
 import { AuthenticateMiddleware } from "./middlewares/authenticate.middleware";
+import { PlantController } from "./plant/plant.controller";
+import { PlantService } from "./plant/plant.service";
 import { HashService } from "./services/hash.service";
 import { JwtService } from "./services/jwt.service";
 import { PrismaService } from "./services/prisma.service";
@@ -17,10 +19,16 @@ import { UserService } from "./user/user.service";
 
 @Module({
     imports: [],
-    controllers: [AppController, UserController, AuthController],
+    controllers: [
+        AppController,
+        UserController,
+        AuthController,
+        PlantController,
+    ],
     providers: [
         AppService,
         UserService,
+        PlantService,
         PrismaService,
         HashService,
         AuthService,
